@@ -22,7 +22,7 @@ const ticTacToe = (function () {
   const gameBoard = Array(9).fill('');
   const boardEl = document.getElementById('board');
   const winningMessageTextElement = document.getElementById('winning-text');
-  let passedCheck = null;
+  let usersCreated = null;
   let circleTurn;
   const playersEl = document.getElementById('playersEl');
   const playerTurnBox1 = playersEl.children[1];
@@ -74,6 +74,12 @@ const ticTacToe = (function () {
     }
   }
 
+  //  FACTORY FUNCTION FOR PLAYERs
+  function createUser(name) {
+    return { name }
+  }
+
+
   function createPlayers() {
     const playerInput = document.querySelectorAll('.playerInput');
 
@@ -81,15 +87,17 @@ const ticTacToe = (function () {
       playerInput[0].value.trim() === '' ||
       playerInput[1].value.trim() === ''
     ) {
-      passedCheck = false;
-      alert('Please input a name.');
+      usersCreated = false;
+      alert('Please fill both fields.');
     } else {
+
+      const player1 = createUser(playerInput[0].value)
+      const player2 = createUser(playerInput[1].value)
+
       // Targets first
-      playersEl.children[1].firstElementChild.textContent =
-        utils.capitalizeFirstLetter(playerInput[0].value);
-      playersEl.children[2].firstElementChild.textContent =
-        utils.capitalizeFirstLetter(playerInput[1].value);
-      passedCheck = true;
+      playersEl.children[1].firstElementChild.textContent = utils.capitalizeFirstLetter(player1.name)
+      playersEl.children[2].firstElementChild.textContent = utils.capitalizeFirstLetter(player2.name)
+      usersCreated = true;
     }
   }
 
@@ -104,6 +112,7 @@ const ticTacToe = (function () {
   function handleClick(cell) {
     const currentClass = circleTurn ? CIRCLE_CLASS : X_CLASS;
 
+    // GUARD CLAUSE TO PREVENT CLICKING TWICE ON A CELL
     if (
       cell.classList.contains(X_CLASS) ||
       cell.classList.contains(CIRCLE_CLASS)
@@ -153,9 +162,8 @@ const ticTacToe = (function () {
     if (draw) {
       winningMessageTextElement.innerText = 'Draw!';
     } else {
-      winningMessageTextElement.innerText = `${
-        circleTurn ? "O's" : "X's"
-      } Win!`;
+      winningMessageTextElement.innerText = `${circleTurn ? "O's" : "X's"
+        } Win!`;
     }
     overlay.classList.remove('d-none');
     overlay.classList.add('d-flex');
@@ -219,7 +227,7 @@ const ticTacToe = (function () {
     startBtn.addEventListener('click', (e) => {
       e.preventDefault();
       createPlayers();
-      if (passedCheck) {
+      if (usersCreated) {
         setGameBoard();
       }
       playerTurnBox2.classList.remove('border-active');
